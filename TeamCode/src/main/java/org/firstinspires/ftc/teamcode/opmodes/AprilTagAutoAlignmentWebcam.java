@@ -44,7 +44,7 @@ public class AprilTagAutoAlignmentWebcam extends OpMode {
     @Override
     public void init() {
         webcamAprilTag.init(hardwareMap, telemetry);
-        drive.init(hardwareMap);
+        drive.init(hardwareMap, false);
 
         // Send telemetry message to signify robot is ready.
         // This telemetry line is especially important when using the IMU, as the IMU can take
@@ -64,7 +64,7 @@ public class AprilTagAutoAlignmentWebcam extends OpMode {
         // FORWARD/BACKWARD or LONGITUDINAL = left joystick y axis (robot centric)
         double forward = -gamepad1.left_stick_y;  // set as negative so pushing joystick forward is a positive value
         // STRAFE = left joystick x axis
-        double strafe = gamepad1.left_stick_x * 1.1;    // multiplier to counteract imperfect strafing, adjustable based on driver preference
+        double strafe = gamepad1.left_stick_x * 1.1;  // multiplier to counteract imperfect strafing, adjustable based on driver preference
         // TURN = right joystick x axis
         double turn = gamepad1.right_stick_x;
 

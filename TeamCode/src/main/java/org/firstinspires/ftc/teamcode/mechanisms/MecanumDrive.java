@@ -148,17 +148,17 @@ public class MecanumDrive {
         driveRobotRelative(newForward, newStrafe, turn);
     }
 
-    public void driveRobotRelative(double y, double x, double rx) {
+    public void driveRobotRelative(double forward, double strafe, double turn) {
     // Method to drive robot from the robot frame of reference (robot relative).
     // Positive values of y move forward, positive values of x strafe to the right, positive values of rx rotate clockwise.
-        x *= 1.1;   // counteract imperfect strafing
+        //x *= 1.1;   // counteract imperfect strafing (changed to pass in via OpMode)
 
         // Calculate the raw power for each wheel based on the amount of forward (y), strafe (x), and turn (rx) inputs
         // See mecanum drive reference: https://cdn11.bigcommerce.com/s-x56mtydx1w/images/stencil/original/products/2234/13280/3209-0001-0007-Product-Insight-2__06708__33265.1725633323.png?c=1
-        double leftFrontPower = (y + x + rx) * speedLimiter;
-        double leftRearPower = (y - x + rx) * speedLimiter;
-        double rightFrontPower = (y - x - rx) * speedLimiter;
-        double rightRearPower = (y + x - rx) * speedLimiter;
+        double leftFrontPower = (forward + strafe + turn) * speedLimiter;
+        double leftRearPower = (forward - strafe + turn) * speedLimiter;
+        double rightFrontPower = (forward - strafe - turn) * speedLimiter;
+        double rightRearPower = (forward + strafe - turn) * speedLimiter;
 
         // Normalize motor power. This ensures all the powers are scaled proportionally and remain in the range of [-1.0, 1.0].
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));

@@ -43,14 +43,14 @@ public class MecanumTeleOp extends LinearOpMode {
             }
 
             if (gamepad1.left_bumper) {  // press the left bumper for robot centric drive
-                drive.driveRobotRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+                drive.driveRobotRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x * 1.1, gamepad1.right_stick_x); // strafe multiplier to counteract imperfect strafing, adjustable based on driver preference
             } else {    // field centric drive
-                drive.driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+                drive.driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x * 1.1, gamepad1.right_stick_x); // strafe multiplier to counteract imperfect strafing, adjustable based on driver preference
             }
             telemetry.update();
         }
 
-        if (isStopRequested()) {
+        if (isStopRequested()) {    // run this when STOP is pressed on the driver hub
 
         }
     }

@@ -52,10 +52,10 @@ public class TestDriveMotors extends OpMode
     private ElapsedTime runtime = new ElapsedTime();
 
     // Declare drive motors
-    private DcMotor frontLeftDrive = null;
-    private DcMotor backLeftDrive = null;
-    private DcMotor frontRightDrive = null;
-    private DcMotor backRightDrive = null;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftRearDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightRearDrive = null;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -66,33 +66,33 @@ public class TestDriveMotors extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        frontLeftDrive  = hardwareMap.get(DcMotor.class, "front_left_drive");
-        backLeftDrive  = hardwareMap.get(DcMotor.class, "back_left_drive");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftRearDrive  = hardwareMap.get(DcMotor.class, "left_rear_drive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightRearDrive = hardwareMap.get(DcMotor.class, "right_rear_drive");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips.
         // TODO: Make sure all motors are facing the correct direction.
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Reset the motor encoder so that it reads zero ticks
-        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Turn the motor back on, required if you use STOP_AND_RESET_ENCODER
+        // Required if you use STOP_AND_RESET_ENCODER
         // Note, RUN_WITHOUT_ENCODER does not disable the encoder; instead tells the SDK not to use the motor encoder
         // for built-in velocity control.
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Send telemetry message to signify robot waiting.
+        // Send telemetry message to let the driver know the robot ready and waiting.
         telemetry.addLine("Robot ready.");
         telemetry.update();
     }
@@ -118,7 +118,7 @@ public class TestDriveMotors extends OpMode
     public void loop() {
 
         // Get number of encoder ticks per rotation for the motor type specified in the Control Hub configuration
-        //double ticksPerRotation = frontLeftDrive.getMotorType().getTicksPerRev();
+        //double ticksPerRotation = leftFrontDrive.getMotorType().getTicksPerRev();
 
         // Test motor directions. Each button should make the corresponding motor run FORWARD.
         //   1) First get all the motors to take to correct positions on the robot by adjusting your Robot Controller Configuration, if necessary.
@@ -129,28 +129,28 @@ public class TestDriveMotors extends OpMode
         double rearRightPower  = gamepad1.b ? 0.4 : 0.0;  // B or PS4: O (circle)
 
         // Write effectors
-        frontLeftDrive.setPower(frontLeftPower);
-        frontRightDrive.setPower(frontRightPower);
-        backLeftDrive.setPower(rearLeftPower);
-        backRightDrive.setPower(rearRightPower);
+        leftFrontDrive.setPower(frontLeftPower);
+        rightFrontDrive.setPower(frontRightPower);
+        leftRearDrive.setPower(rearLeftPower);
+        rightRearDrive.setPower(rearRightPower);
 
         // Update telemetry
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         //telemetry.addData("Encoder ticks per rotation: ", ticksPerRotation);
-        //telemetry.addData("Number of rotations: ", frontLeftDrive.getCurrentPosition() / ticksPerRotation);
+        //telemetry.addData("Number of rotations: ", leftFrontDrive.getCurrentPosition() / ticksPerRotation);
         
         telemetry.addLine()
                 .addData("FrontLeft Power", "%4.2f", frontLeftPower)
-                .addData("FrontLeft Encoder ", "%s", frontLeftDrive.getCurrentPosition());
+                .addData("FrontLeft Encoder ", "%s", leftFrontDrive.getCurrentPosition());
         telemetry.addLine()
                 .addData("RearLeft Power", "%4.2f", rearLeftPower)
-                .addData("RearLeft Encoder ", "%s", backLeftDrive.getCurrentPosition());
+                .addData("RearLeft Encoder ", "%s", leftRearDrive.getCurrentPosition());
         telemetry.addLine()
                 .addData("FrontRight Power", "%4.2f", frontRightPower)
-                .addData("FrontRight Encoder ", "%s", frontRightDrive.getCurrentPosition());
+                .addData("FrontRight Encoder ", "%s", rightFrontDrive.getCurrentPosition());
         telemetry.addLine()
                 .addData("RearRight Power", "%4.2f", rearRightPower)
-                .addData("RearRight Encoder ", "%s", backRightDrive.getCurrentPosition());
+                .addData("RearRight Encoder ", "%s", rightRearDrive.getCurrentPosition());
         
         telemetry.update();
     }
