@@ -63,9 +63,8 @@ public class TestDriveMotors extends OpMode
     @Override
     public void init() {
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
+        // Get references to and initialize the motors.
+        // Note that the strings specified here as parameters must match the names assigned in the robot controller configuration.
         leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
         leftRearDrive  = hardwareMap.get(DcMotor.class, "left_rear_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
@@ -92,8 +91,8 @@ public class TestDriveMotors extends OpMode
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Send telemetry message to let the driver know the robot ready and waiting.
-        telemetry.addLine("Robot ready.");
+        // Send telemetry message indicating robot is ready and wait for driver to press START.
+        telemetry.addLine("Robot ready.  Press PLAY to start.");
         telemetry.update();
     }
 

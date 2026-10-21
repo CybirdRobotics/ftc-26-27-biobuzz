@@ -41,7 +41,8 @@ public class MecanumDrive {
 
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
-        // Get references to and initialize the motors. Note that the strings specified here as parameters must match the names assigned in the robot controller configuration.
+        // Get references to and initialize the motors.
+        // Note that the strings specified here as parameters must match the names assigned in the robot controller configuration.
         leftFrontDrive = hwMap.get(DcMotor.class, "left_front_drive");
         leftRearDrive = hwMap.get(DcMotor.class, "left_rear_drive");
         rightFrontDrive = hwMap.get(DcMotor.class, "right_front_drive");
@@ -155,10 +156,10 @@ public class MecanumDrive {
 
         // Calculate the raw power for each wheel based on the amount of forward (y), strafe (x), and turn (rx) inputs
         // See mecanum drive reference: https://cdn11.bigcommerce.com/s-x56mtydx1w/images/stencil/original/products/2234/13280/3209-0001-0007-Product-Insight-2__06708__33265.1725633323.png?c=1
-        double leftFrontPower = (forward + strafe + turn) * speedLimiter;
-        double leftRearPower = (forward - strafe + turn) * speedLimiter;
-        double rightFrontPower = (forward - strafe - turn) * speedLimiter;
-        double rightRearPower = (forward + strafe - turn) * speedLimiter;
+        double leftFrontPower = (forward + strafe + turn);
+        double leftRearPower = (forward - strafe + turn);
+        double rightFrontPower = (forward - strafe - turn);
+        double rightRearPower = (forward + strafe - turn);
 
         // Normalize motor power. This ensures all the powers are scaled proportionally and remain in the range of [-1.0, 1.0].
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));
@@ -172,12 +173,11 @@ public class MecanumDrive {
             rightRearPower /= max;
         }
 
-
         // Set scaled motor powers (with limiter).
-        leftFrontDrive.setPower(squarePower(leftFrontPower));
-        leftRearDrive.setPower(squarePower(leftRearPower));
-        rightFrontDrive.setPower(squarePower(rightFrontPower));
-        rightRearDrive.setPower(squarePower(rightRearPower));
+        leftFrontDrive.setPower(squarePower(leftFrontPower * speedLimiter));
+        leftRearDrive.setPower(squarePower(leftRearPower * speedLimiter));
+        rightFrontDrive.setPower(squarePower(rightFrontPower * speedLimiter));
+        rightRearDrive.setPower(squarePower(rightRearPower * speedLimiter));
     }
 
     private static double squarePower(double power) {

@@ -46,7 +46,7 @@ public class AprilTagAutoAlignmentWebcam extends OpMode {
         webcamAprilTag.init(hardwareMap, telemetry);
         drive.init(hardwareMap, false);
 
-        // Send telemetry message to signify robot is ready.
+        // Send telemetry message indicating robot is ready and wait for driver to press START.
         // This telemetry line is especially important when using the IMU, as the IMU can take
         // a couple of seconds to initialize and this line executes when IMU initialization is complete.
         telemetry.addLine("Robot ready.  Press PLAY to start.");
