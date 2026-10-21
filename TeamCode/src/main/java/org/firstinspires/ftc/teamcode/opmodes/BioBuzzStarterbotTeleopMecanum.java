@@ -47,15 +47,15 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  * we will also need to adjust the "PIDF" coefficients with some that are a better fit for our application.
  */
 
-@TeleOp(name = "Mec BioBuzz StarterBot Teleop", group = "StarterBot")
+@TeleOp(name = "BioBuzz StarterBot Teleop", group = "StarterBot")
 //@Disabled
 public class BioBuzzStarterbotTeleopMecanum extends OpMode {
 
     // Declare OpMode members.
     private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
+    private DcMotor leftRearDrive = null;
     private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
+    private DcMotor rightRearDrive = null;
     private DcMotorEx launcher = null;
     private DcMotor intake = null;
     private CRServo leftIntakeServo = null;
@@ -103,8 +103,8 @@ public class BioBuzzStarterbotTeleopMecanum extends OpMode {
          */
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftRearDrive = hardwareMap.get(DcMotor.class, "left_rear_drive");
+        rightRearDrive = hardwareMap.get(DcMotor.class, "right_rear_drive");
         intake = hardwareMap.get(DcMotor.class, "intake");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         windmillServo = hardwareMap.get(CRServo.class, "windmillServo");
@@ -120,8 +120,8 @@ public class BioBuzzStarterbotTeleopMecanum extends OpMode {
          */
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightRearDrive.setDirection(DcMotor.Direction.FORWARD);
 
         /*
          * Setting zeroPowerBehavior to BRAKE enables a "brake mode". This causes the motor to
@@ -130,8 +130,8 @@ public class BioBuzzStarterbotTeleopMecanum extends OpMode {
          */
         leftFrontDrive.setZeroPowerBehavior(BRAKE);
         rightFrontDrive.setZeroPowerBehavior(BRAKE);
-        leftBackDrive.setZeroPowerBehavior(BRAKE);
-        rightBackDrive.setZeroPowerBehavior(BRAKE);
+        leftRearDrive.setZeroPowerBehavior(BRAKE);
+        rightRearDrive.setZeroPowerBehavior(BRAKE);
         intake.setZeroPowerBehavior(BRAKE);
 
         /*
@@ -261,8 +261,8 @@ public class BioBuzzStarterbotTeleopMecanum extends OpMode {
          */
         leftFrontDrive.setPower(leftFrontPower);
         rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
+        leftRearDrive.setPower(leftBackPower);
+        rightRearDrive.setPower(rightBackPower);
     }
 
     void launch() {

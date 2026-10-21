@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public class MecanumDrive {
 
     // Declare motor and IMU objects (and make them private to prevent external access)
-    private DcMotor frontLeftDrive, backLeftDrive, frontRightDrive, backRightDrive;
+    private DcMotor leftFrontDrive, leftRearDrive, rightFrontDrive, rightRearDrive;
     private IMU imu;
     private GoBildaPinpointDriver pinpoint;
     private ElapsedTime runtime = new ElapsedTime();
@@ -42,16 +42,16 @@ public class MecanumDrive {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         // Get references to and initialize the motors. Note that the strings specified here as parameters must match the names assigned in the robot controller configuration.
-        frontLeftDrive = hwMap.get(DcMotor.class, "front_left_drive");
-        backLeftDrive = hwMap.get(DcMotor.class, "back_left_drive");
-        frontRightDrive = hwMap.get(DcMotor.class, "front_right_drive");
-        backRightDrive = hwMap.get(DcMotor.class, "back_right_drive");
+        leftFrontDrive = hwMap.get(DcMotor.class, "left_front_drive");
+        leftRearDrive = hwMap.get(DcMotor.class, "left_rear_drive");
+        rightFrontDrive = hwMap.get(DcMotor.class, "right_front_drive");
+        rightRearDrive = hwMap.get(DcMotor.class, "right_rear_drive");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // TODO: Determine which motor pair needs to be reversed (LEFT or RIGHT).
-        //frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        //backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        //leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        //leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Reset encoders and set to RUN_USING_ENCODER mode
         setMotorModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -66,10 +66,10 @@ public class MecanumDrive {
 
     public void setMotorModes(DcMotor.RunMode mode) {
     // Method to set all motor run modes
-        frontLeftDrive.setMode(mode);
-        frontRightDrive.setMode(mode);
-        backLeftDrive.setMode(mode);
-        backRightDrive.setMode(mode);
+        leftFrontDrive.setMode(mode);
+        rightFrontDrive.setMode(mode);
+        leftRearDrive.setMode(mode);
+        rightRearDrive.setMode(mode);
     }
 
     public void configurePinpoint() {
@@ -126,7 +126,7 @@ public class MecanumDrive {
     }
 
     public int getCurrentPosition() {
-        return frontLeftDrive.getCurrentPosition();
+        return leftFrontDrive.getCurrentPosition();
     }
 
     public void driveFieldRelative(double forward, double strafe, double turn) {
@@ -140,7 +140,7 @@ public class MecanumDrive {
         theta = AngleUnit.normalizeRadians(theta -
                 imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
-        // Third, convert back to cartesian
+        // Third, convert back to Cartesian coordinates
         double newForward = r * Math.sin(theta);
         double newStrafe = r * Math.cos(theta);
 
@@ -153,21 +153,31 @@ public class MecanumDrive {
     // Positive values of y move forward, positive values of x strafe to the right, positive values of rx rotate clockwise.
         x *= 1.1;   // counteract imperfect strafing
 
-        // Normalize motor power. This ensures all the powers are scaled proportionally and remain in the range of [-1.0, 1.0].
-        double scaleFactor = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
-
-        // Calculate the power needed for each wheel based on the amount of forward (y), strafe (x), and turn (rx)
+        // Calculate the raw power for each wheel based on the amount of forward (y), strafe (x), and turn (rx) inputs
         // See mecanum drive reference: https://cdn11.bigcommerce.com/s-x56mtydx1w/images/stencil/original/products/2234/13280/3209-0001-0007-Product-Insight-2__06708__33265.1725633323.png?c=1
-        double frontLeftPower = ((y + x + rx) / scaleFactor) * speedLimiter;
-        double backLeftPower = ((y - x + rx) / scaleFactor) * speedLimiter;
-        double frontRightPower = ((y - x - rx) / scaleFactor) * speedLimiter;
-        double backRightPower = ((y + x - rx) / scaleFactor) * speedLimiter;
+        double leftFrontPower = (y + x + rx) * speedLimiter;
+        double leftRearPower = (y - x + rx) * speedLimiter;
+        double rightFrontPower = (y - x - rx) * speedLimiter;
+        double rightRearPower = (y + x - rx) * speedLimiter;
+
+        // Normalize motor power. This ensures all the powers are scaled proportionally and remain in the range of [-1.0, 1.0].
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));
+        max = Math.max(max, Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(rightRearPower));
+        max = Math.max(max, 1.0);
+        if (max > 1.0 ) {
+            leftFrontPower /= max;
+            leftRearPower /= max;
+            rightFrontPower /= max;
+            rightRearPower /= max;
+        }
+
 
         // Set scaled motor powers (with limiter).
-        frontLeftDrive.setPower(squarePower(frontLeftPower));
-        backLeftDrive.setPower(squarePower(backLeftPower));
-        frontRightDrive.setPower(squarePower(frontRightPower));
-        backRightDrive.setPower(squarePower(backRightPower));
+        leftFrontDrive.setPower(squarePower(leftFrontPower));
+        leftRearDrive.setPower(squarePower(leftRearPower));
+        rightFrontDrive.setPower(squarePower(rightFrontPower));
+        rightRearDrive.setPower(squarePower(rightRearPower));
     }
 
     private static double squarePower(double power) {
@@ -186,16 +196,16 @@ public class MecanumDrive {
     */
         // Determine new target position. This method assumes that each movement is relative to the robots last position.
         int targetPosition = (int)(distanceUnit.toMm(distance) * TICKS_PER_MM);
-        int frontLeftTarget = frontLeftDrive.getCurrentPosition() + targetPosition;
-        int backLeftTarget = backLeftDrive.getCurrentPosition() + targetPosition;
-        int frontRightTarget = frontRightDrive.getCurrentPosition() + targetPosition;
-        int backRightTarget = backRightDrive.getCurrentPosition() + targetPosition;
+        int frontLeftTarget = leftFrontDrive.getCurrentPosition() + targetPosition;
+        int backLeftTarget = leftRearDrive.getCurrentPosition() + targetPosition;
+        int frontRightTarget = rightFrontDrive.getCurrentPosition() + targetPosition;
+        int backRightTarget = rightRearDrive.getCurrentPosition() + targetPosition;
 
         // Set target in motor controller then set RUN_TO_POSITION
-        frontLeftDrive.setTargetPosition(frontLeftTarget);
-        backLeftDrive.setTargetPosition(backLeftTarget);
-        frontRightDrive.setTargetPosition(frontRightTarget);
-        backRightDrive.setTargetPosition(backRightTarget);
+        leftFrontDrive.setTargetPosition(frontLeftTarget);
+        leftRearDrive.setTargetPosition(backLeftTarget);
+        rightFrontDrive.setTargetPosition(frontRightTarget);
+        rightRearDrive.setTargetPosition(backRightTarget);
         setMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
 
         driveRobotRelative(Math.abs(speed), 0, 0);  // speed must be positive for RUN_TO_POSITION to work correctly
@@ -203,13 +213,13 @@ public class MecanumDrive {
 
     public boolean isBusy() {
     // Method to check for active drive motor(s).  Returns a boolean.
-        return (frontLeftDrive.isBusy() && backLeftDrive.isBusy() && frontRightDrive.isBusy() && backRightDrive.isBusy());
+        return (leftFrontDrive.isBusy() && leftRearDrive.isBusy() && rightFrontDrive.isBusy() && rightRearDrive.isBusy());
     }
 
     public void stopRobot() {
-        frontLeftDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backRightDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        leftRearDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightRearDrive.setPower(0);
     }
 }
