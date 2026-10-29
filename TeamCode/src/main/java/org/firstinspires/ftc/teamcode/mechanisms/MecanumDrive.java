@@ -165,7 +165,7 @@ public class MecanumDrive {
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(leftRearPower));
         max = Math.max(max, Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(rightRearPower));
-        max = Math.max(max, 1.0);
+
         if (max > 1.0 ) {
             leftFrontPower /= max;
             leftRearPower /= max;
