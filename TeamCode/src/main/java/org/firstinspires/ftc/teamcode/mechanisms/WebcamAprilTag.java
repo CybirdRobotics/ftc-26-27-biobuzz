@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
@@ -29,11 +30,9 @@ public class WebcamAprilTag {
 
     private List<AprilTagDetection> detections = new ArrayList<>();
 
-    private Telemetry telemetry;
+     private Telemetry telemetry;
 
-    /*
-     Initialize hardware and telemetry.
-    */
+    // Initialize hardware, processors, and telemetry.
     public void init(HardwareMap hwMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
@@ -44,7 +43,7 @@ public class WebcamAprilTag {
                 //.setDrawAxes(true) // Changed in V12.0
                 //.setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+                .setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
                 .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
                 //.setDrawCubeProjection(false)
 

@@ -90,6 +90,8 @@ public class BioBuzzStarterbotTeleopMecanum extends OpMode {
     // Create a variable to set to the intake.
     double intakePower;
 
+    public static final double speedLimiter = 0.6;  // speedLimiter reduces movement speed to a specified % of maximum (1.0). Used for outreach events.
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -158,7 +160,7 @@ public class BioBuzzStarterbotTeleopMecanum extends OpMode {
          * servos work to pull elements into the intake.
          */
         rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
-        windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        //windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /*
          * Tell the driver that initialization is complete.
@@ -259,10 +261,10 @@ public class BioBuzzStarterbotTeleopMecanum extends OpMode {
         /*
          * Send calculated power to wheels
          */
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftRearDrive.setPower(leftBackPower);
-        rightRearDrive.setPower(rightBackPower);
+        leftFrontDrive.setPower(leftFrontPower * speedLimiter);
+        rightFrontDrive.setPower(rightFrontPower * speedLimiter);
+        leftRearDrive.setPower(leftBackPower * speedLimiter);
+        rightRearDrive.setPower(rightBackPower * speedLimiter);
     }
 
     void launch() {
