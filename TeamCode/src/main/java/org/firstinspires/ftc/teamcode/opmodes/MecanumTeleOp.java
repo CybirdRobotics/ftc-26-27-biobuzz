@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 
 @TeleOp(name="Mecanum TeleOp", group = "OpMode")
-//@Disabled   // comment this out to add to the OpMode list on the Driver Hub
+@Disabled   // comment this out to add to the OpMode list on the Driver Hub
 public class MecanumTeleOp extends LinearOpMode {
 
     // Create an instance of the MecanumDrive object to be used to access robot drive functionality.
@@ -50,8 +50,6 @@ public class MecanumTeleOp extends LinearOpMode {
             telemetry.update();
         }
 
-        if (isStopRequested()) {    // run this when STOP is pressed on the driver hub
-
-        }
+        if (isStopRequested()) {}   // run this when STOP is pressed on the driver hub
     }
 }

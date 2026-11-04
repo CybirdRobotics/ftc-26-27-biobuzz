@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,12 +23,13 @@ public class MecanumDrive {
 
     // Declare drive constants (and make public if you want to use by the calling OpMode).
     // TODO: Calculate the TICKS_PER_INCH for your specific encoder. Check the vendor website to determine the encoder resolution for you particular motor.
-    private static final double TICKS_PER_REV = 28;  // PPR REV 20:1 (5:1 + 4:1) = 28 * (5.23 * 3.67) = 537.4; goBilda 312RPM Yellow Jacket motor = 537.7 PPR
-    private static final double GEAR_RATIO = 5.23 * 3.67;  // external drive/motor gearing or 1.0 if none.
-    private static final double WHEEL_DIAMETER_MM = 75; // REV = 75mm; goBuilda = 104mm
-    private static final double TICKS_PER_MM = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_MM * Math.PI);
+    //private static final double TICKS_PER_REV = 28;  // PPR REV 20:1 (5:1 + 4:1) = 28 * (5.23 * 3.67) = 537.4; goBilda 312RPM Yellow Jacket motor = 537.7 PPR
+    //private static final double GEAR_RATIO = 5.23 * 3.67;  // external drive/motor gearing or 1.0 if none.
+    private static final double ENCODER_RESOLUTION = 537.7;  // PPR REV 20:1 (5:1 + 4:1) = 28 * (5.23 * 3.67) = 537.4; goBilda 312RPM Yellow Jacket motor = ((((1+(46/17))) * (1+(46/11))) * 28) = 537.7 PPR
+    private static final double WHEEL_DIAMETER_MM = 104; // REV = 75mm; goBuilda = 104mm
+    private static final double TICKS_PER_MM = ENCODER_RESOLUTION / (WHEEL_DIAMETER_MM * Math.PI);
     //private static final double TICKS_PER_IN = TICKS_PER_MM * 25.4;
-    public static final double speedLimiter = 1.0;  // speedLimiter reduces movement speed to a specified % of maximum (1.0). Used for outreach events.
+    public static final double speedLimiter = 0.8;  // speedLimiter reduces movement speed to a specified % of maximum (1.0). Used for outreach events.
 
     //public void init(HardwareMap hwMap) {
     public void init(HardwareMap hwMap, boolean isPinPointIMU) {
@@ -35,8 +38,8 @@ public class MecanumDrive {
         imu = hwMap.get(IMU.class, "imu");
 
         // TODO: Change the the following to match the controller Hub orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
         imu.initialize(new IMU.Parameters(orientationOnRobot));
@@ -51,8 +54,15 @@ public class MecanumDrive {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // TODO: Determine which motor pair needs to be reversed (LEFT or RIGHT).
-        //leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        //leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        // Set zeroPowerBehavior to BRAKE to enables a "brake mode". This causes the motor to slow down much faster
+        // when it is coasting, creating a much more controllable drivetrain.
+        leftFrontDrive.setZeroPowerBehavior(BRAKE);
+        leftRearDrive.setZeroPowerBehavior(BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(BRAKE);
+        rightRearDrive.setZeroPowerBehavior(BRAKE);
 
         // Reset encoders and set to RUN_USING_ENCODER mode
         setMotorModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -185,7 +195,7 @@ public class MecanumDrive {
         return power * Math.abs(power);  // square magnitude of input while maintaining the sign
     }
 
-    public void encoderDrive(double speed, double distance, DistanceUnit distanceUnit) {
+    public void driveEncoder(double speed, double distance, DistanceUnit distanceUnit) {
     /*
      This function uses the FTC SDK DistanceUnits class, which accepts different input units depending on the user's preference.
 
@@ -211,7 +221,7 @@ public class MecanumDrive {
         driveRobotRelative(Math.abs(speed), 0, 0);  // speed must be positive for RUN_TO_POSITION to work correctly
     }
 
-    public boolean isBusy() {
+    public boolean isMotorBusy() {
     // Method to check for active drive motor(s).  Returns a boolean.
         return (leftFrontDrive.isBusy() && leftRearDrive.isBusy() && rightFrontDrive.isBusy() && rightRearDrive.isBusy());
     }
